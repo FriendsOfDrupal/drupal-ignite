@@ -6,7 +6,7 @@ class RoboFile extends \Robo\Tasks
 {
 
   // Standard template url.
-  private $standardUrlTemplate = 'git@github.com:paolomainardi/drupal-ignite-standard-template.git';
+  private $standardUrlTemplate = 'git@github.com:FriendsOfDrupal/drupal-ignite-standard.git';
 
   /**
    * Setup drupal-ignite.
@@ -14,7 +14,7 @@ class RoboFile extends \Robo\Tasks
   public function setup($name = false, $domain = false, $docroot = false, $opts = ['template' => 'false'])
   {
     $this->stopOnFail(true);
-    $this->yell("Drupal-ignite setup");
+    $this->yell("Drupal Ignite setup");
     if (!$name) {
       $name = $this->ask("Please enter Site's Name:");
     }
