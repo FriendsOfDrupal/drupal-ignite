@@ -1,0 +1,4 @@
+@ECHO OFF
+SET BIN_TARGET=robo
+
+%BIN_TARGET% setup
