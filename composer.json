@@ -1,6 +1,5 @@
 {
     "require": {
-      "codegyre/robo": "*"
     },
     "config": {
         "bin-dir": "bin/"
