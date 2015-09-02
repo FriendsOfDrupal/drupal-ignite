@@ -1,8 +1,21 @@
 {
     "require": {
+        "symfony/console": "~2.7",
+        "league/flysystem": "~1.0"
+    },
+    "require-dev": {
+        "behat/behat": "~3.0",
+        "phpspec/phpspec": "~2.2",
+        "bossa/phpspec2-expect": "~1.0"
     },
     "config": {
         "bin-dir": "bin/"
     },
-    "minimum-stability": "beta"
+    "minimum-stability": "beta",
+    "autoload": {
+        "psr-4": {
+            "": ["src/"],
+            "Feature\\": "features/bootstrap"
+        }
+    }
 }

@@ -1,0 +1,8 @@
+default:
+    autoload:
+        'Feature': %paths.base%/features/bootstrap
+    suites:
+        default:
+            paths:    [ %paths.base%/features/ignite ]
+            contexts:
+                - Feature\CliContext
