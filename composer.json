@@ -1,7 +1,8 @@
 {
     "require": {
         "symfony/console": "~2.7",
-        "league/flysystem": "~1.0"
+        "league/flysystem": "~1.0",
+        "gitonomy/gitlib": "~0.1"
     },
     "require-dev": {
         "behat/behat": "~3.0",

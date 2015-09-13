@@ -80,9 +80,11 @@ class CliContext implements Context, SnippetAcceptingContext
      */
     public function iEnterTheFollowingValuesForSetup(TableNode $table)
     {
-        $arguments = array_combine($table->getRow(0), $table->getRow(1));
-
         $this->commandTester = new CommandTester($this->command);
+
+        $arguments = array_combine($table->getRow(0), $table->getRow(1));
+        $arguments['docroot'] = $this->getPrefixedDocRoot($arguments['docroot']);
+
         $this->commandTester->execute(array_merge([
             'command' => $this->command->getName(),
         ], $arguments));
@@ -96,5 +98,35 @@ class CliContext implements Context, SnippetAcceptingContext
         $docroot = $this->commandTester->getInput()->getArgument('docroot');
 
         expect(file_exists($docroot))->toBe(true);
+    }
+
+    /**
+     * @Then the standard template should have been cloned from github
+     */
+    public function theStandardTemplateShouldHaveBeenClonedFromGithub()
+    {
+        $docroot = $this->commandTester->getInput()->getArgument('docroot');
+
+        expect(file_exists($docroot . DIRECTORY_SEPARATOR . '.git'))->toBe(true);
+    }
+
+    /**
+     * @Then the its placeholders should have been replaced by the specified values
+     */
+    public function theItsPlaceholdersShouldHaveBeenReplacedByTheSpecifiedValues()
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * Prefixes a docroot with the system's temp dir to avoid leaving tests leftovers around the filesystem.
+     *
+     * @param  string $docRoot
+     *
+     * @return string
+     */
+    private function getPrefixedDocRoot($docRoot)
+    {
+        return sys_get_temp_dir() . DIRECTORY_SEPARATOR . $docRoot;
     }
 }

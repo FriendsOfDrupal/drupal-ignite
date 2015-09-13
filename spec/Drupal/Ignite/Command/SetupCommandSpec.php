@@ -28,7 +28,7 @@ class SetupCommandSpec extends ObjectBehavior
     {
         $input = new ArrayInput([]);
 
-        $this->run($input, $output)->shouldReturn(0);
+        $this->run($input, $output)->shouldReturn(1);
     }
 
     function it_welcomes_the_user(OutputInterface $output)
@@ -94,5 +94,20 @@ class SetupCommandSpec extends ObjectBehavior
         $this->run($input, $output);
 
         expect(file_exists($docroot))->toBe(true);
+    }
+
+    function it_clones_a_template(OutputInterface $output)
+    {
+        $docroot = sys_get_temp_dir() . '/drig-test/foo';
+
+        $input = new ArrayInput([
+            'name' => 'foo',
+            'domain' => 'foo.com',
+            'docroot' => $docroot
+        ]);
+
+        $this->run($input, $output);
+
+        expect(file_exists($docroot . DIRECTORY_SEPARATOR . '.git'))->toBe(true);
     }
 }

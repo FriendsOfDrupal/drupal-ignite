@@ -10,8 +10,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
 
+use Drupal\Ignite\Vcs\Adapter\GitonomyRepository;
+use Drupal\Ignite\Url\Url;
+use Drupal\Ignite\Filesystem\Path;
+use Drupal\Ignite\Vcs\Branch\Name as BranchName;
+
+use InvalidArgumentException;
+
 class SetupCommand extends Command
 {
+    const TEMPLATE_DEFAULT = 'git@github.com:FriendsOfDrupal/drupal-ignite-standard.git';
+
     /**
      * @var Filesystem
      */
@@ -39,6 +48,7 @@ class SetupCommand extends Command
         ;
 
         $this->fs = new Filesystem(new Local('/'));
+        $this->repository = new GitonomyRepository();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -57,12 +67,26 @@ class SetupCommand extends Command
 
         if (empty($docroot)) {
             $output->writeln("Please enter Site's Document Root:");
+
+            return 1;
         }
 
         $output->writeln("Creating the new instance of the project...");
 
-        $this->fs->createDir($docroot);
+        if ($this->fs->has($docroot)) {
+            $this->fs->deleteDir($docroot);
+        }
+
+        try {
+            $this->repository->download(new Path($docroot), new Url(self::TEMPLATE_DEFAULT), new BranchName('master'), false);
+        } catch (InvalidArgumentException $iae) {
+            $output->writeln("Error while cloning the repository: " . $iae->getMessage());
+
+            return 1;
+        }
 
         $output->writeln("Done!");
+
+        return 0;
     }
 }
