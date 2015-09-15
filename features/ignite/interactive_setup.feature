@@ -13,7 +13,7 @@ Feature: developer creates a new project interactively
         When I enter the following values for setup:
             | name | domain  | docroot       |
             | foo  | foo.com | drig-test/foo |
-        Then a new project should be succesfully created
+        Then a new project should have been succesfully created
 
     Scenario: configure the standard template when dumping the new instance
         Given I started a new Drupal Ignite setup

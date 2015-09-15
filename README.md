@@ -6,6 +6,8 @@ This project contains a Drupal 7 template project that can be used to quickly se
 NOTICE
 ------
 
+Version 1.0 is a work in progress and DOES NOT WORK YET, so don't use it.
+
 This software is in early development stage and could still change a lot, so don't get mad if it still has a few raw edges :)
 
 Usage

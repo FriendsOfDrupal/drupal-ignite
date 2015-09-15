@@ -8,8 +8,39 @@ use Prophecy\Argument;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Drupal\Ignite\Tests\FakeRepository;
+
+use League\Flysystem\Filesystem;
+use League\Flysystem\Adapter\Local;
+
 class SetupCommandSpec extends ObjectBehavior
 {
+    /**
+     * @var string
+     */
+    private $docroot;
+
+    /**
+     * @var Filesystem
+     */
+    private $fs;
+
+    function let()
+    {
+        $this->beConstructedWith('drig:setup', new FakeRepository());
+
+        $this->fs = new Filesystem(new Local('/'));
+
+        $this->docroot = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'drig-test' . DIRECTORY_SEPARATOR . 'foo';
+
+        $this->fs->deleteDir($this->docroot);
+    }
+
+    function letGo()
+    {
+        $this->fs->deleteDir($this->docroot);
+    }
+
     function it_is_initializable()
     {
         $this->shouldHaveType('Symfony\Component\Console\Command\Command');
@@ -77,12 +108,10 @@ class SetupCommandSpec extends ObjectBehavior
 
     function it_creates_a_new_instance(OutputInterface $output)
     {
-        $docroot = sys_get_temp_dir() . '/drig-test/foo';
-
         $input = new ArrayInput([
             'name' => 'foo',
             'domain' => 'foo.com',
-            'docroot' => $docroot
+            'docroot' => $this->docroot,
         ]);
 
         $output->writeln("Drupal Ignite setup")->shouldBeCalled(1);
@@ -93,21 +122,48 @@ class SetupCommandSpec extends ObjectBehavior
 
         $this->run($input, $output);
 
-        expect(file_exists($docroot))->toBe(true);
+        expect($this->fs->has($this->docroot))->toBe(true);
     }
 
     function it_clones_a_template(OutputInterface $output)
     {
-        $docroot = sys_get_temp_dir() . '/drig-test/foo';
-
         $input = new ArrayInput([
             'name' => 'foo',
             'domain' => 'foo.com',
-            'docroot' => $docroot
+            'docroot' => $this->docroot,
         ]);
 
         $this->run($input, $output);
 
-        expect(file_exists($docroot . DIRECTORY_SEPARATOR . '.git'))->toBe(true);
+        expect($this->fs->has($this->docroot . DIRECTORY_SEPARATOR . '.git'))->toBe(true);
+    }
+
+    function it_replaces_file_name_placeholders(OutputInterface $output)
+    {
+        $input = new ArrayInput([
+            'name' => 'foo',
+            'domain' => 'foo.com',
+            'docroot' => $this->docroot,
+        ]);
+
+        $this->run($input, $output);
+
+        expect($this->fs->has($this->docroot . DIRECTORY_SEPARATOR . 'build.xml'))->toBe(true);
+        expect($this->fs->has($this->docroot . DIRECTORY_SEPARATOR . 'foo.make'))->toBe(true);
+        expect($this->fs->has($this->docroot . DIRECTORY_SEPARATOR . 'profiles' . DIRECTORY_SEPARATOR . 'foo' . DIRECTORY_SEPARATOR . 'foo.info'))->toBe(true);
+    }
+
+    function it_replaces_file_content_placeholders(OutputInterface $output)
+    {
+        $input = new ArrayInput([
+            'name' => 'foo',
+            'domain' => 'foo.com',
+            'docroot' => $this->docroot,
+        ]);
+
+        $this->run($input, $output);
+
+        expect(file_get_contents($this->docroot . DIRECTORY_SEPARATOR . 'build.xml'))
+            ->toMatch('/\<project\ name\=\"foo\"\ default\=\"dummy\"\>/');
     }
 }
