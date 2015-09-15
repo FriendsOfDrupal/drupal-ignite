@@ -4,6 +4,7 @@ use Symfony\Component\Finder\Finder as Finder;
 
 class RoboFile extends \Robo\Tasks
 {
+  use Robo\Common\TaskIO;
 
   // Standard template url.
   private $standardUrlTemplate = 'git@github.com:FriendsOfDrupal/drupal-ignite-standard.git';
